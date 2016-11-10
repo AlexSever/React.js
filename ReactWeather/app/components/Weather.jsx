@@ -6,22 +6,23 @@ var openWeatherMap = require("openWeatherMap");
 var Weather = React.createClass({
     getInitialState: function () {
         return {
+            location:  '',
+            forecast:  '',
             isLoading: false
         };
     },
     handleSearch: function (location) {
-        var that = this;
+        var self = this; // If I left "this", it will point to another openWeatherMap object
         this.setState({isLoading: true});
 
-        openWeatherMap.getTemp(location).then(function (temp) {
-            that.setState({
-                location: location,
-                temp: temp,
+        openWeatherMap.getTemp(location).then(function (data) {
+            self.setState({
+                location:  data.location,
+                temp:      data.temp,
                 isLoading: false
             });
         }, function (errorMessage) {
-            that.setState({isLoading: false});
-
+            self.setState({isLoading: false});
             alert(errorMessage);
         });
     },
@@ -50,5 +51,3 @@ var Weather = React.createClass({
 });
 
 module.exports = Weather;
-
-// If I left "this", it will point to another openWeatherMap object
