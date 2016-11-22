@@ -2,29 +2,63 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <!-- React -->
+    <title>Learning React</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react-dom.min.js"></script>
-    <!-- Bootstrap -->
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/latest/css/bootstrap.min.css">
-    <!--<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">-->
-
-    <!-- Custom CSS files -->
-    <link rel="stylesheet" href="./app/styles/app.css">
 </head>
 <body>
-    <div id="app"></div>
+    <div id="content"></div>
+    <script type="text/babel">
 
-    <script type="text/babel" src="./app/app.jsx"></script>
+        // PROPS
 
-    <!--<script type="text/babel">-->
-        <!--ReactDOM.render(-->
-                <!--<h2>Welcome to React!</h2>,-->
-                <!--document.getElementById('app')-->
-        <!--);-->
-    <!--</script>-->
+        var ReactProps = React.createClass({
+            propTypes: {
+                name: React.PropTypes.string.isRequired
+            },
+            getDefaultProps: function () {
+                return {
+                    name: "Alexei"
+                };
+            },
+            render: function () {
+                return (
+                    <h1>Hello {this.props.name}</h1>
+                );
+            }
+        });
+
+        // STATE
+
+        var State = React.createClass({
+            getInitialState : function() {
+                return {
+                    name : "Katya"
+                };
+            },
+
+            handleClick : function() {
+                this.setState({
+                    name : "Alexei"
+                });
+            },
+
+            render : function() {
+                return <div onClick={this.handleClick}>
+                    Hello, {this.state.name}
+                </div>;
+            }
+        });
+
+        ReactDOM.render (
+                <div>
+                    <ReactProps name="Alexei" />
+                    <State />
+                </div>,
+                document.getElementById("content")
+        );
+
+    </script>
 </body>
 </html>
