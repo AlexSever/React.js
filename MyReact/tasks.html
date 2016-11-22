@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Learning React</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.3.2/react-dom.min.js"></script>
+</head>
+<body>
+    <div id="content"></div>
+    <script type="text/babel">
+
+        // 1) Create component
+        var Article = React.createClass({
+            getDefaultProps: function () {
+                return {
+                    title: "Article Title",
+                    author: "Alexei",
+                    body: "Bacon ipsum dolor amet pork belly burgdoggen pancetta strip steak filet mignon bresaola ground round brisket. Shankle corned beef t-bone, short ribs tenderloin ribeye chicken andouille. Salami pork belly chuck pork chop kevin, jerky kielbasa. Pork chop swine ground round, kevin drumstick short loin chicken. Shankle meatball cupim tongue picanha bacon burgdoggen. Alcatra filet mignon biltong, pig porchetta shank brisket salami tri-tip short loin jerky jowl. Kevin pork chop turducken doner."
+
+                };
+            },
+            render: function () {
+                return (
+                        <div>
+                            <h1>{this.props.title}</h1>
+                            <h3>{this.props.author}</h3>
+                            <p>{this.props.body}</p>
+                        </div>
+                );
+            }
+        });
+
+        // 2) Dynamic input
+        var HelloWorld = React.createClass({
+            getInitialState : function() {
+                return {
+                    text : "stranger"
+                };
+            },
+            handleNameChange(event) {
+                this.setState({
+                    text: event.target.value
+                });
+            },
+            render: function () {
+                return (
+                        <div>
+                            <input type="text" placeholder="Your name" onChange={this.handleNameChange} />
+                            <h1>Hello, {this.state.text}!</h1>
+                        </div>
+                );
+            }
+        });
+
+        ReactDOM.render (
+                <div>
+                    <Article />
+                    <hr />
+                    <HelloWorld />
+                </div>,
+                document.getElementById("content")
+        );
+
+    </script>
+</body>
+</html>

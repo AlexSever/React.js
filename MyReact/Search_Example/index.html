@@ -18,36 +18,73 @@
                 id: 1,
                 name: 'Darth Vader',
                 phoneNumber: '+250966666666',
-                image: 'img/darth.gif'
+                image: 'img/darth.gif',
+                address: 'Planet Mega',
+                email: 'darth.vader@gmail.com'
             }, {
                 id: 2,
                 name: 'Princess Leia',
                 phoneNumber: '+250966344466',
-                image: 'img/leia.gif'
+                image: 'img/leia.gif',
+                address: 'Planet Earth',
+                email: 'princess.leia@gmail.com'
             }, {
                 id: 3,
                 name: 'Luke Skywalker',
                 phoneNumber: '+250976654433',
-                image: 'img/luke.gif'
+                image: 'img/luke.gif',
+                address: 'Planet Earth',
+                email: 'luke.skywalker@gmail.com'
             }, {
                 id: 4,
                 name: 'Chewbacca',
                 phoneNumber: '+250456784935',
-                image: 'img/chewbacca.gif'
+                image: 'img/chewbacca.gif',
+                address: 'Planet Chewbacca',
+                email: 'chewbacca@gmail.com'
             }
         ];
 
         var Contact = React.createClass({
-            render: function() {
+            // onClick={this.changeView}
+            getInitialState: function () {
+                return {isOpened: false};
+            },
+            changeView: function () {
+                this.setState({
+                    isOpened: !this.state.isOpened
+                })
+            },
+            renderNormal: function () {
                 return (
-                    <li className="contact">
-                        <img className="contact-image" src={this.props.image} width="60px" height="60px" />
-                        <div className="contact-info">
-                            <div className="contact-name"> {this.props.name} </div>
-                            <div className="contact-number"> {this.props.phoneNumber} </div>
-                        </div>
-                    </li>
+                        <li className="contact" onClick={this.changeView}>
+                            <img className="contact-image" src={this.props.image} width="60px" height="60px" />
+                            <div className="contact-info">
+                                <div className="contact-name"> {this.props.name} </div>
+                                <div className="contact-number"> {this.props.phoneNumber} </div>
+                            </div>
+                        </li>
                 );
+            },
+            renderFull: function () {
+                return (
+                        <li className="contact" onClick={this.changeView}>
+                            <img className="contact-image" src={this.props.image} width="60px" height="60px" />
+                            <div className="contact-info">
+                                <div className="contact-name"> {this.props.name} </div>
+                                <div className="contact-number"> {this.props.phoneNumber} </div>
+                                <div className="contact-address"> {this.props.address} </div>
+                                <div className="contact-email"> {this.props.email} </div>
+                            </div>
+                        </li>
+                );
+            },
+            render: function() {
+                if (this.state.isOpened) {
+                    return this.renderFull();
+                } else {
+                    return this.renderNormal();
+                }
             }
         });
 
@@ -82,6 +119,8 @@
                                         name={el.name}
                                         phoneNumber={el.phoneNumber}
                                         image={el.image}
+                                        address={el.address}
+                                        email={el.email}
                                     />;
                                })
                             }
