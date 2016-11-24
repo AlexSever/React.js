@@ -34,7 +34,11 @@
   font-weight: bold;
 }
 
-.contact-number {
+.contact-number,
+.contact-address,
+.contact-email {
   font-size: 18px;
   color: grey;
 }
+
+
