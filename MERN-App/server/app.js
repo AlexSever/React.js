@@ -1,9 +1,10 @@
-import express from "express";
-import bodyParser from "body-parser";
+import express from 'express';
+import cors from 'cors';
+import bodyParser from 'body-parser';
 
 import { serverPort } from '../etc/config.json';
 
-import * as db from "./utils/DataBaseUtils.js";
+import * as db from './utils/DataBaseUtils';
 
 // Initialization of express application
 const app = express();
@@ -13,6 +14,9 @@ db.setUpConnection();
 
 // Using bodyParser middleware
 app.use( bodyParser.json() );
+
+// Allow requests from any origin
+app.use(cors({ origin: '*' }));
 
 // RESTful api handlers
 app.get('/notes', (req, res) => {
@@ -27,6 +31,6 @@ app.delete('/notes/:id', (req, res) => {
     db.deleteNote(req.params.id).then(data => res.send(data));
 });
 
-app.listen(serverPort, () => {
+const server = app.listen(serverPort, function() {
     console.log(`Server is up and running on port ${serverPort}`);
 });
