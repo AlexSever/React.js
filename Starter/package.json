@@ -4,13 +4,14 @@
   "description": "Simple react app",
   "main": "webpack.config.js",
   "scripts": {
-    "dev": "./node_modules/.bin/webpack-dev-server --content-base ./public --inline --hot",
+    "dev": "webpack-dev-server --content-base ./public --inline --hot",
     "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Alexei Miasin",
   "license": "MIT",
   "dependencies": {
+    "express": "^4.14.0",
     "react": "^0.14.7",
     "react-dom": "^0.14.7"
   },
