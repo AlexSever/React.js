@@ -5,6 +5,12 @@ var path = require('path');
 module.exports = {
     devtool: debug ? "inline-sourcemap" : null,
     entry: "./app/app.jsx",
+    resolve: {
+        root: __dirname,
+        alias: {
+        },
+        extensions: ["",".js",".jsx"]
+    },
     module: {
         loaders: [
             {
