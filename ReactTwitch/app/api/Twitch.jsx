@@ -8,7 +8,6 @@ const TWITCH_URL = 'https://api.twitch.tv/kraken';
 
 export default {
     getChannels(channel) {
-        // var encodedLocation = encodeURIComponent(location);
         const TWITCH_URL_CHANNELS = `${TWITCH_URL}/channels/${channel}?${client_id}`;
         const TWITCH_URL_STREAMS = `${TWITCH_URL}/streams/${channel}?${client_id}`;
 

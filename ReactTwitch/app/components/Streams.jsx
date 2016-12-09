@@ -3,16 +3,19 @@ import React from 'react';
 import twitch from '../api/Twitch.jsx';
 
 export default class Streams extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
         this.state = {
             twitch: ["freecodecamp", "OgamingSC2", "trumpsc", "ESL_SC2", "cretetion", "storbeck", "RobotCaleb", "habathcx", "noobs2ninjas", "streamerhouse", "StonedYooda", "reynad27", "desertodtv", "plusan", "a_seagull"],
-            fullData: []
-        }
+            permanentData: [],
+            data: []
+        };
+        this.findStreaming = this.findStreaming.bind(this);
+        this.showAll = this.showAll.bind(this);
     }
     componentDidMount() {
-        var channels = this.state.twitch;
+        let channels = this.state.twitch;
         let promises = channels.map(channel => {
             return new Promise ((resolve, reject) => {
                 twitch.getChannels(channel)
@@ -34,32 +37,51 @@ export default class Streams extends React.Component {
         });
         Promise.all(promises)
             .then(responses => {
-            console.log("any text");
-            console.log(responses);
-            var channels = [];
-            responses.forEach(response => channels.push(response));
-            this.setState({
-                fullData:channels
+                console.log("any text");
+                console.log(responses);
+                let channels = [];
+                responses.forEach(response => channels.push(response));
+                let dataCopy = channels.slice();
+                this.setState({
+                    permanentData: dataCopy,
+                    data: channels
+                });
+                console.log(this.state.permanentData);
             });
-            console.log(this.state.fullData);
+    }
+    findStreaming() {
+        let currentData = this.state.permanentData.slice();
+        let filtered = currentData.filter(channel => {
+            return channel.streamData.stream !== null;
         });
-
+        this.setState({
+            data: filtered
+        }, function() {console.log(this.state.data);});
+    }
+    showAll() {
+        var originalData = this.state.permanentData.slice();
+        this.setState({
+            data: originalData
+        }, function() {console.log(this.state.data);});
     }
     render() {
         //console.log(JSON.stringify(this.state, null, 2));
 
-        // var user = this.state.fullData[0].display_name;
-        // console.log(user);
-
-        let channels = this.state.fullData.map((item, index) => {
+        let channels = this.state.data.map((item, index) => {
             return ( <h2 key={index}>{item.channelData.display_name} is {JSON.stringify(item.streamData.stream, null, 2)}</h2> );
         });
 
         return (
             <div>
+                <button onClick = {this.findStreaming}>Show Streaming</button>
+                <button onClick = {this.showAll}>Show All</button>
                 <h1>Hello</h1>
                 {channels}
             </div>
         );
     }
 }
+
+// if(!this.state.items.length){
+//     return(<div class="spinner-loader">Loading…</div>);
+// }
