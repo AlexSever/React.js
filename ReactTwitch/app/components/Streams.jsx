@@ -11,7 +11,8 @@ export default class Streams extends React.Component {
             permanentData: [],
             data: []
         };
-        this.findStreaming = this.findStreaming.bind(this);
+        this.findOnline = this.findOnline.bind(this);
+        this.findOffline = this.findOffline.bind(this);
         this.showAll = this.showAll.bind(this);
     }
     componentDidMount() {
@@ -37,8 +38,7 @@ export default class Streams extends React.Component {
         });
         Promise.all(promises)
             .then(responses => {
-                console.log("any text");
-                console.log(responses);
+                // console.log(responses);
                 let channels = [];
                 responses.forEach(response => channels.push(response));
                 let dataCopy = channels.slice();
@@ -46,20 +46,28 @@ export default class Streams extends React.Component {
                     permanentData: dataCopy,
                     data: channels
                 });
-                console.log(this.state.permanentData);
             });
     }
-    findStreaming() {
+    findOnline() {
         let currentData = this.state.permanentData.slice();
-        let filtered = currentData.filter(channel => {
+        let online = currentData.filter(channel => {
             return channel.streamData.stream !== null;
         });
         this.setState({
-            data: filtered
+            data: online
+        }, function() {console.log(this.state.data);});
+    }
+    findOffline() {
+        let currentData = this.state.permanentData.slice();
+        let offline = currentData.filter(channel => {
+            return channel.streamData.stream === null;
+        });
+        this.setState({
+            data: offline
         }, function() {console.log(this.state.data);});
     }
     showAll() {
-        var originalData = this.state.permanentData.slice();
+        let originalData = this.state.permanentData.slice();
         this.setState({
             data: originalData
         }, function() {console.log(this.state.data);});
@@ -67,16 +75,46 @@ export default class Streams extends React.Component {
     render() {
         //console.log(JSON.stringify(this.state, null, 2));
 
-        let channels = this.state.data.map((item, index) => {
-            return ( <h2 key={index}>{item.channelData.display_name} is {JSON.stringify(item.streamData.stream, null, 2)}</h2> );
-        });
+        // let channels = this.state.data.map((item, index) => {
+        //     return ( <h2 key={index}>{item.channelData.display_name} is {JSON.stringify(item.streamData.stream, null, 2)}</h2> );
+        // });
 
         return (
             <div>
-                <button onClick = {this.findStreaming}>Show Streaming</button>
-                <button onClick = {this.showAll}>Show All</button>
-                <h1>Hello</h1>
-                {channels}
+                <div className = "titleDiv">
+                    <p className = "title">Twitch TV API Tool</p>
+                </div>
+                <div className = "btnDiv">
+                    <button className = "onlineBtn" onClick = {this.findOnline}>Online</button>
+                    <button className = "offlineBtn" onClick = {this.findOffline}>Offline</button>
+                    <button className = "allBtn" onClick = {this.showAll}>Show All</button>
+                </div>
+                <RenderStreams data = {this.state.data} />
+            </div>
+        );
+    }
+}
+class RenderStreams extends React.Component {
+    // handleClick(link) {
+    //     window.open(link);
+    // }
+    render() {
+        let channels = this.props.data;
+        let renderChannels = "";
+
+        if (channels.length === 0) {
+            return(<div className="spinner-loader">Loading…</div>);
+        } else {
+            renderChannels = channels.map((item, index) => {
+
+                return ( <h2 key={index}>{item.channelData.display_name} is {JSON.stringify(item.streamData.stream, null, 2)}</h2> );
+
+            });
+        }
+
+        return (
+            <div>
+                {renderChannels}
             </div>
         );
     }
