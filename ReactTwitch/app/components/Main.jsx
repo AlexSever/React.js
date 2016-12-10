@@ -6,7 +6,9 @@ export default class Main extends React.Component {
     render() {
         return (
             <div>
-                <h1>Hello!!!</h1>
+                <div className = "titleDiv">
+                    <p className = "title">Twitch TV API Tool</p>
+                </div>
                 <Streams />
             </div>
         );

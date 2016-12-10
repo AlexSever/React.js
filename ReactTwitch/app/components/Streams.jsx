@@ -81,23 +81,17 @@ export default class Streams extends React.Component {
 
         return (
             <div>
-                <div className = "titleDiv">
-                    <p className = "title">Twitch TV API Tool</p>
-                </div>
                 <div className = "btnDiv">
                     <button className = "onlineBtn" onClick = {this.findOnline}>Online</button>
                     <button className = "offlineBtn" onClick = {this.findOffline}>Offline</button>
                     <button className = "allBtn" onClick = {this.showAll}>Show All</button>
                 </div>
-                <RenderStreams data = {this.state.data} />
+                <HandleStreams data = {this.state.data} />
             </div>
         );
     }
 }
-class RenderStreams extends React.Component {
-    // handleClick(link) {
-    //     window.open(link);
-    // }
+class HandleStreams extends React.Component {
     render() {
         let channels = this.props.data;
         let renderChannels = "";
@@ -105,10 +99,57 @@ class RenderStreams extends React.Component {
         if (channels.length === 0) {
             return(<div className="spinner-loader">Loading…</div>);
         } else {
-            renderChannels = channels.map((item, index) => {
+            renderChannels = channels.map(item => {
 
-                return ( <h2 key={index}>{item.channelData.display_name} is {JSON.stringify(item.streamData.stream, null, 2)}</h2> );
+                let url = item.channelData.url,
+                    id = item.channelData._id,
+                    name = item.channelData.display_name,
+                    logo = item.channelData.logo,
+                    streaming = item.streamData.stream,
+                    streamingMessage = "",
+                    bio = item.userData.bio,
+                    closed = "",
+                    style = {
+                    background: "#FFC857",
+                    color: "#232323"
+                };
 
+                if ( (streaming === null) || (streaming === undefined) ) {
+                    streamingMessage = "User is not currently streaming";
+                } else {
+                    streamingMessage = `User is currently streaming ${streaming.game} with ${streaming.viewers} viewers.`;
+                    style = {
+                        background: "#67D5B5",
+                        color: "#232323"
+                    }
+                }
+
+                if (item.channelData.status === 422) {
+                    closed = "This account is closed or does not exist";
+                    streamingMessage = "";
+                    style = {
+                        background: "#BF3100",
+                        color: "#FFFFF2"
+                    }
+                }
+
+                if (logo === null) {
+                    logo = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/231853/TwitchHolder.png';
+                }
+
+                return (
+                    <RenderStream
+                        key = {id}
+                        url = {url}
+                        logo = {logo}
+                        name = {name}
+                        streaming = {streaming}
+                        streamingMessage = {streamingMessage}
+                        bio = {bio}
+                        closed = {closed}
+                        style = {style}
+                    />
+                );
             });
         }
 
@@ -120,6 +161,23 @@ class RenderStreams extends React.Component {
     }
 }
 
-// if(!this.state.items.length){
-//     return(<div class="spinner-loader">Loading…</div>);
-// }
+class RenderStream extends React.Component {
+    handleClick(link) {
+        window.open(link);
+    }
+    render() {
+        return (
+            <div style = {this.props.style} className = "resultsWrapper" onClick = {this.handleClick.bind(null, this.props.url)} >
+                <div className = "imgContainer">
+                    <img src = {this.props.logo} alt = "player logo" />
+                </div>
+                <div className = "userWrapper">
+                    <p className = "username">{this.props.name}</p>
+                    <p className = "streaming">{this.props.streamingMessage}</p>
+                    <p className = "bio">{this.props.bio}</p>
+                    <p>{this.props.closed}</p>
+                </div>
+            </div>
+        );
+    }
+}
