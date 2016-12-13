@@ -6,8 +6,8 @@ export default class Main extends React.Component {
     render() {
         return (
             <div>
-                <div className = "titleDiv">
-                    <p className = "title">Twitch TV API Tool</p>
+                <div className="titleDiv">
+                    <h1 className="title">Reactive Twitch</h1>
                 </div>
                 <Streams />
             </div>

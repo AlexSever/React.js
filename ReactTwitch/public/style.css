@@ -1,0 +1,222 @@
+body {
+    background: #6441A5;
+}
+button:focus {outline:0;}
+
+/*** Main ***/
+
+.titleDiv {
+    margin-left: 200px;
+}
+.title {
+    text-align: center;
+    font-size: 3em;
+    color: #00d8ff;
+    font-family: "Cabin Sketch", sans-serif;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    /*text-shadow: 2px 2px #ff0000;*/
+    text-shadow: 2px 2px black;
+}
+/*** Streams ***/
+
+/*Left Panel*/
+
+.left-nav {
+    background: #212121;
+    border-color: #616161;
+    border-right: solid 1px;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+}
+.left-nav-button {
+    display: block;
+    background-color: transparent;
+    cursor: pointer;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    transition: background 0.5s;
+    width: 200px;
+    font-family: "Cabin Sketch", sans-serif;
+    font-size: 2em;
+    border-radius: 15px 0 0 15px;
+    border-right: solid 1px;
+    color: #FFF;
+    border-color: transparent;
+}
+.active {
+    background: #6441A5;
+}
+.addChannelBtn {
+    display: block;
+    background-color: #6441A5;
+    cursor: pointer;
+    height: 83px;
+    line-height: 35px;
+    text-align: center;
+    transition: background 0.5s;
+    width: 200px;
+    font-family: "Cabin Sketch", sans-serif;
+    font-size: 2em;
+    border-radius: 15px 0 0 15px;
+    border-right: solid 1px;
+    color: #FFF;
+    border-color: transparent;
+    word-spacing: 20px;
+    position: absolute;
+    bottom: 110px;
+}
+.fa-twitch {
+    position: absolute;
+    bottom: 10px;
+    color: white;
+    font-size: 75px;
+    left: 30%;
+}
+
+/*Right Panel*/
+
+.right-field {
+    margin-left: 200px;
+}
+.spinner-loader {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(65%, -50%);
+}
+
+/*Channels*/
+
+.stream {
+    display: inline-block;
+    background: white;
+    border-bottom: solid;
+    border-radius: 5px;
+    box-shadow: 10px 10px 5px #4A148C;
+    margin-left: 20px;
+    margin-right: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+    transition: opacity 0.5s;
+    height: 250px;
+    width: 175px;
+    cursor: pointer;
+}
+.stream:hover .overlay {
+    opacity: 0.9;
+}
+
+.frontSide {
+    position: absolute;
+}
+.logo {
+    border-bottom: solid;
+    border-radius: 5px 5px 0 0;
+    border-width: 1px;
+    height: 175px;
+    width: 175px;
+}
+.channelName {
+    bottom: 15px;
+    font-size: 20px;
+    /*position: absolute;*/
+    /*left:0;*/
+    /*right:0;*/
+    /*margin-left:auto;*/
+    /*margin-right:auto;*/
+}
+.status {
+    height: 10px;
+    border-radius: 0 0 5px 5px;
+}
+
+.overlay {
+    background: #000;
+    border-radius: 5px 5px 0 0;
+    opacity: 0;
+    position: absolute;
+    transition: opacity .3s;
+    height: 243px;
+    width: 175px;
+}
+.overlay p {
+    color: white;
+    text-align: left;
+    overflow: hidden;
+    margin: 10px 5px 0 10px;
+}
+/*.overlay .fa-close {*/
+    /*color: white;*/
+    /*font-size: 25px;*/
+    /*margin: 5px 0 0 135px;*/
+    /*transition: text-shadow 0.3s;*/
+/*}*/
+
+/*.overlay .fa-close:hover {*/
+    /*text-shadow: 0 0 30px white;*/
+/*}*/
+
+/*Add Channel Button*/
+
+.submit-popup {
+    background: #FFF;
+    border-radius: 15px;
+    box-shadow: 10px 10px 5px #212121;
+    height: 180px;
+    margin-left: -200px;
+    top: 30%;
+    position: fixed;
+    left: 50%;
+    text-align: center;
+    transition: opacity 0.5s;
+    width: 400px;
+}
+.submit-popup .fa-close {
+    cursor: pointer;
+    font-size: 30px;
+    margin: 0px 0 0 16px;
+    position: absolute;
+}
+.add-channel-input {
+    border-color: #6441A5;
+    height: 50px;
+    margin-top: 23px;
+    outline: none;
+}
+input[type="text"] {
+    color: #212121;
+    font-size: 25px;
+    border-radius: 5px;
+}
+.add-channel-button {
+    background: #6441A5;
+    border-radius: 15px;
+    height: 50px;
+    width: 200px;
+    margin-top: 20px;
+    color: #FFF;
+    font-size: 25px;
+    border: none;
+    box-shadow: 0 4px darkgray;
+    cursor: pointer;
+}
+.add-channel-button:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px darkgray;
+    background-color: #400080;
+}
+.add-channel-button p {
+    color: #FFF;
+    cursor: pointer;
+    font-size: 25px;
+    padding-top: 8px;
+}
+#add-status {
+    margin-top: 10px;
+}
+
