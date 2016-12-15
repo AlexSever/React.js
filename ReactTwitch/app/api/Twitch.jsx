@@ -6,7 +6,7 @@ const TWITCH_URL = 'https://api.twitch.tv/kraken';
     // {params:{client_id: "ppjulqz1cnlk0oo7w3f3tqfkndc1gkh"}};
 
 export default {
-    getChannels(channel) {
+    getChannelData(channel) {
         const TWITCH_URL_CHANNELS = `${TWITCH_URL}/channels/${channel}?${client_id}`;
         const TWITCH_URL_USERS = `${TWITCH_URL}/users/${channel}?${client_id}`;
         const TWITCH_URL_STREAMS = `${TWITCH_URL}/streams/${channel}?${client_id}`;
@@ -22,10 +22,9 @@ export default {
                 userData: usersResponse.data,
                 streamData: streamsResponse.data
             };
-        }))
-        .catch(error => {
+        }, error => {
             console.log(error);
-        });
+        }));
         
         
         // return axios.get(TWITCH_URL_CHANNELS)

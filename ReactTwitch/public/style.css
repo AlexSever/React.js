@@ -150,16 +150,15 @@ button:focus {outline:0;}
     overflow: hidden;
     margin: 10px 5px 0 10px;
 }
-/*.overlay .fa-close {*/
-    /*color: white;*/
-    /*font-size: 25px;*/
-    /*margin: 5px 0 0 135px;*/
-    /*transition: text-shadow 0.3s;*/
-/*}*/
-
-/*.overlay .fa-close:hover {*/
-    /*text-shadow: 0 0 30px white;*/
-/*}*/
+.overlay .fa-close {
+    color: white;
+    font-size: 28px;
+    margin: 4px 0 0 138px;
+    transition: text-shadow 0.3s;
+}
+.overlay .fa-close:hover {
+    text-shadow: 0 0 30px white;
+}
 
 /*Add Channel Button*/
 
@@ -167,7 +166,7 @@ button:focus {outline:0;}
     background: #FFF;
     border-radius: 15px;
     box-shadow: 10px 10px 5px #212121;
-    height: 180px;
+    height: 195px;
     margin-left: -200px;
     top: 30%;
     position: fixed;
@@ -216,7 +215,7 @@ input[type="text"] {
     font-size: 25px;
     padding-top: 8px;
 }
-#add-status {
-    margin-top: 10px;
+.add-status {
+    margin-top: 14px;
 }
 

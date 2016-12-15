@@ -1,13 +1,15 @@
 import React from 'react';
 
-import twitch from '../api/Twitch.jsx';
+import TwitchAPI from '../api/Twitch.jsx';
+
+// import AddStream from './AddStream.jsx';
 
 export default class Streams extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            twitch: ["freecodecamp", "OgamingSC2", "trumpsc", "ESL_SC2", "cretetion", "storbeck", "RobotCaleb", "habathcx", "noobs2ninjas", "streamerhouse", "StonedYooda", "reynad27", "desertodtv", "plusan", "a_seagull"],
+            twitchChannelsDB: ["freecodecamp", "ogamingsc2", "trumpsc", "esl_sc2", "cretetion", "storbeck", "robotcaleb", "habathcx", "noobs2ninjas", "streamerhouse", "stonedyooda", "reynad27", "desertodtv", "plusan", "a_seagull"],
             permanentData: [],
             data: [],
             all: "active",
@@ -18,34 +20,30 @@ export default class Streams extends React.Component {
                 visibility: "hidden",
                 opacity: "0"
             },
-            input: ""
+            inputStatus: ""
+            //input: ""
         };
         this.findOnline = this.findOnline.bind(this);
         this.findOffline = this.findOffline.bind(this);
         this.showAll = this.showAll.bind(this);
         this.popupOpen = this.popupOpen.bind(this);
         this.popupClose = this.popupClose.bind(this);
-        this.handleInputChange = this.handleInputChange.bind(this);
+        // this.handleInputChange = this.handleInputChange.bind(this);
         this.handleKeyDown = this.handleKeyDown.bind(this);
         this.addChannel = this.addChannel.bind(this);
+        this.removeChannel = this.removeChannel.bind(this);
     }
     componentDidMount() {
-        let channels = this.state.twitch;
+        this.promiseChannelsData();
+    }
+    promiseChannelsData() {
+        let channels = this.state.twitchChannelsDB;
         let promises = channels.map(channel => {
             return new Promise ((resolve, reject) => {
-                twitch.getChannels(channel)
+                TwitchAPI.getChannelData(channel)
                     .then(response => {
                         resolve(response);
-
-                        //console.log("currentData");
-                        //console.log(currentData);
-
-                        //console.log(this.state.fullData[0].display_name);
-                        // })
-                        // .then(response => {
-                        //     this.setState({classrooms: response.data.profile})
-                    })
-                    .catch(error => {
+                    }, error => {
                         reject(error);
                     })
             })
@@ -96,6 +94,7 @@ export default class Streams extends React.Component {
         }, function() {console.log(this.state.data);});
     }
     popupOpen() {
+        //this.refs.userInput.focus();
         this.setState({
             opacity: {opacity: "0.3"},
             popup: {
@@ -103,30 +102,70 @@ export default class Streams extends React.Component {
                 opacity: "1"
             }
         });
+
     }
     popupClose() {
         this.setState({
-            input: "",
+            // input: "",
             opacity: {opacity: "1"},
             popup: {
                 visibility: "hidden",
                 opacity: "0"
-            }
+            },
+            inputStatus: ""
         });
+        this.refs.userInput.value = "";
     }
-    handleInputChange(e) {
-        this.setState({ input: e.target.value });
-    }
+    // handleInputChange(e) {
+    //     this.setState({ input: e.target.value });
+    // }
     handleKeyDown(e) {
         if (e.keyCode == 13 ) {
             return this.addChannel();
         }
     }
     addChannel() {
-        console.log(this.refs.userInput.value);
-        console.log(this.state.input);
-        // var val = this.refs.channel.value;
-        // console.log(val);
+        let userInput = this.refs.userInput.value.toLowerCase();
+        console.log(userInput.length);
+        //console.log(this.state.input);
+        if (userInput.length > 0) {
+            if (this.state.twitchChannelsDB.indexOf(userInput) !== -1) {
+                this.setState({
+                    inputStatus: `${userInput} is already in the list.`
+                });
+            } else {
+                TwitchAPI.getChannelData(userInput)
+                    .then(response => {
+                        console.log(response);
+                        let channels = this.state.twitchChannelsDB.slice();
+                        channels.push(userInput);
+                        console.log(channels);
+                        this.setState({
+                            twitchChannelsDB: channels,
+                            inputStatus: `${userInput} channel added successfully!`
+                        });
+                        this.promiseChannelsData();
+
+                    }, error => {
+                        console.log(error);
+                        this.setState({
+                            inputStatus: `Could not find channel ${userInput}.`
+                        });
+                    });
+
+            }
+        }
+    }
+    removeChannel(name) {
+        let channels = this.state.twitchChannelsDB.slice();
+        let channel = name.toLowerCase();
+        let index = channels.indexOf(channel);
+        channels.splice(index, 1);
+        console.log(channels);
+
+        this.setState({
+            twitchChannelsDB: channels
+        }, function() {this.promiseChannelsData();});
     }
     render() {
         //console.log(JSON.stringify(this.state, null, 2));
@@ -158,13 +197,21 @@ export default class Streams extends React.Component {
                     <a href='http://www.twitch.tv' target='_blank'><i className='fa fa-twitch'/></a>
                 </div>
                 <div style={this.state.opacity} className="right-field">
-                    <HandleStreams data={this.state.data} onLoad={this.handleLoaded} />
+                    <HandleStreams data={this.state.data} removeChannel={this.removeChannel}/>
                 </div>
                 <div style={this.state.popup} className='submit-popup'>
-                    <input className="add-channel-input" type='text' value={this.state.input} ref="userInput" onChange={this.handleInputChange} onKeyDown={this.handleKeyDown} placeholder='Channel Name'></input>
+                    <input
+                        type='text'
+                        placeholder='Channel Name'
+                        className="add-channel-input"
+                        ref="userInput"
+                        /*value={this.state.input}*/
+                        /*onChange={this.handleInputChange}*/
+                        onKeyDown={this.handleKeyDown}
+                    />
                     <i className='fa fa-close' onClick={this.popupClose}/>
-                    <button className="add-channel-button" type="submit" onClick={this.addChannel}>Add Channel</button>
-                    <p id='add-status'></p>
+                    <button className="add-channel-button" onClick={this.addChannel}>Add Channel</button>
+                    <p className='add-status'>{this.state.inputStatus}</p>
                 </div>
             </div>
         );
@@ -173,6 +220,7 @@ export default class Streams extends React.Component {
 class HandleStreams extends React.Component {
     render() {
         let channels = this.props.data;
+        console.log(channels);
         let renderChannels = "";
 
         if (channels.length === 0) {
@@ -210,6 +258,7 @@ class HandleStreams extends React.Component {
 
                 return (
                     <RenderStream
+                        removeChannel = {this.props.removeChannel}
                         key = {id}
                         url = {url}
                         logo = {logo}
@@ -237,15 +286,17 @@ class RenderStream extends React.Component {
         window.open(link);
     }
     render() {
+        console.log("RENDERING");
         return (
-            <div className="stream" onClick={this.handleClick.bind(null, this.props.url)} >
+            <div className="stream" >
                 <div className="frontSide">
                     <img className="logo" src={this.props.logo} alt="player logo" />
-                    <p className="channelName">{this.props.name}</p>
+                    <p className="channelName" >{this.props.name}</p>
                     <div style={this.props.style} className="status"></div>
                 </div>
                 <div className="overlay">
-                    <p className="bio">{this.props.bio}</p>
+                    <i className='fa fa-close' onClick={this.props.removeChannel.bind(null, this.props.name)}/>
+                    <p className="bio" onClick={this.handleClick.bind(null, this.props.url)} >{this.props.bio}</p>
                 </div>
             </div>
         );
