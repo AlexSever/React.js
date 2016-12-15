@@ -11,7 +11,7 @@ export default class Streams extends React.Component {
         this.state = {
             twitchChannelsDB: ["freecodecamp", "ogamingsc2", "trumpsc", "esl_sc2", "cretetion", "storbeck", "robotcaleb", "habathcx", "noobs2ninjas", "streamerhouse", "stonedyooda", "reynad27", "desertodtv", "plusan", "a_seagull"],
             permanentData: [],
-            data: [],
+            renderingData: [],
             all: "active",
             online: "",
             offline: "",
@@ -34,9 +34,9 @@ export default class Streams extends React.Component {
         this.removeChannel = this.removeChannel.bind(this);
     }
     componentDidMount() {
-        this.promiseChannelsData();
+        this.loadChannelsFromDB();
     }
-    promiseChannelsData() {
+    loadChannelsFromDB() {
         let channels = this.state.twitchChannelsDB;
         let promises = channels.map(channel => {
             return new Promise ((resolve, reject) => {
@@ -56,7 +56,7 @@ export default class Streams extends React.Component {
                 let dataCopy = channels.slice();
                 this.setState({
                     permanentData: dataCopy,
-                    data: channels
+                    renderingData: channels
                 });
             });
     }
@@ -66,11 +66,11 @@ export default class Streams extends React.Component {
             return channel.streamData.stream !== null;
         });
         this.setState({
-            data: online,
+            renderingData: online,
             all: "",
             online: "active",
             offline: ""
-        }, function() {console.log(this.state.data);});
+        }, function() {console.log(this.state.renderingData);});
     }
     findOffline() {
         let currentData = this.state.permanentData.slice();
@@ -78,20 +78,20 @@ export default class Streams extends React.Component {
             return channel.streamData.stream === null;
         });
         this.setState({
-            data: offline,
+            renderingData: offline,
             all: "",
             online: "",
             offline: "active"
-        }, function() {console.log(this.state.data);});
+        }, function() {console.log(this.state.renderingData);});
     }
     showAll() {
         let originalData = this.state.permanentData.slice();
         this.setState({
-            data: originalData,
+            renderingData: originalData,
             all: "active",
             online: "",
             offline: ""
-        }, function() {console.log(this.state.data);});
+        }, function() {console.log(this.state.renderingData);});
     }
     popupOpen() {
         //this.refs.userInput.focus();
@@ -126,7 +126,6 @@ export default class Streams extends React.Component {
     }
     addChannel() {
         let userInput = this.refs.userInput.value.toLowerCase();
-        console.log(userInput.length);
         //console.log(this.state.input);
         if (userInput.length > 0) {
             if (this.state.twitchChannelsDB.indexOf(userInput) !== -1) {
@@ -139,13 +138,28 @@ export default class Streams extends React.Component {
                         console.log(response);
                         let channels = this.state.twitchChannelsDB.slice();
                         channels.push(userInput);
-                        console.log(channels);
+
+                        let permanentData = this.state.permanentData.slice();
+                        permanentData.push(response);
+
+                        let currentData = this.state.renderingData.slice();
+                        currentData.push(response);
+
+                        if
+                            (this.state.online === "active" && response.streamData.stream === null) {
+                        } else if
+                            (this.state.offline === "active" && response.streamData.stream !== null) {
+                        } else {
+                            this.setState({
+                                renderingData: currentData
+                            });
+                        }
+
                         this.setState({
                             twitchChannelsDB: channels,
+                            permanentData: permanentData,
                             inputStatus: `${userInput} channel added successfully!`
                         });
-                        this.promiseChannelsData();
-
                     }, error => {
                         console.log(error);
                         this.setState({
@@ -156,21 +170,32 @@ export default class Streams extends React.Component {
             }
         }
     }
-    removeChannel(name) {
+    removeChannel(name, id) {
         let channels = this.state.twitchChannelsDB.slice();
         let channel = name.toLowerCase();
         let index = channels.indexOf(channel);
         channels.splice(index, 1);
-        console.log(channels);
+
+        let permanentData = this.state.permanentData.slice();
+        let permanentDataLeft = permanentData.filter(channel => {
+            return channel.channelData._id !== id;
+        });
+
+        let currentData = this.state.renderingData.slice();
+        let currentDataLeft = currentData.filter(channel => {
+            return channel.channelData._id !== id;
+        });
 
         this.setState({
-            twitchChannelsDB: channels
-        }, function() {this.promiseChannelsData();});
+            twitchChannelsDB: channels,
+            permanentData: permanentDataLeft,
+            renderingData: currentDataLeft
+        }/*, function() {this.loadChannelsFromDB();}*/);
     }
     render() {
         //console.log(JSON.stringify(this.state, null, 2));
 
-        // let channels = this.state.data.map((item, index) => {
+        // let channels = this.state.renderingData.map((item, index) => {
         //     return ( <h2 key={index}>{item.channelData.display_name} is {JSON.stringify(item.streamData.stream, null, 2)}</h2> );
         // });
 
@@ -197,7 +222,7 @@ export default class Streams extends React.Component {
                     <a href='http://www.twitch.tv' target='_blank'><i className='fa fa-twitch'/></a>
                 </div>
                 <div style={this.state.opacity} className="right-field">
-                    <HandleStreams data={this.state.data} removeChannel={this.removeChannel}/>
+                    <HandleStreams data={this.state.renderingData} removeChannel={this.removeChannel}/>
                 </div>
                 <div style={this.state.popup} className='submit-popup'>
                     <input
@@ -220,7 +245,6 @@ export default class Streams extends React.Component {
 class HandleStreams extends React.Component {
     render() {
         let channels = this.props.data;
-        console.log(channels);
         let renderChannels = "";
 
         if (channels.length === 0) {
@@ -259,6 +283,7 @@ class HandleStreams extends React.Component {
                 return (
                     <RenderStream
                         removeChannel = {this.props.removeChannel}
+                        id = {id}
                         key = {id}
                         url = {url}
                         logo = {logo}
@@ -286,7 +311,6 @@ class RenderStream extends React.Component {
         window.open(link);
     }
     render() {
-        console.log("RENDERING");
         return (
             <div className="stream" >
                 <div className="frontSide">
@@ -295,7 +319,7 @@ class RenderStream extends React.Component {
                     <div style={this.props.style} className="status"></div>
                 </div>
                 <div className="overlay">
-                    <i className='fa fa-close' onClick={this.props.removeChannel.bind(null, this.props.name)}/>
+                    <i className='fa fa-close' onClick={this.props.removeChannel.bind(null, this.props.name, this.props.id)}/>
                     <p className="bio" onClick={this.handleClick.bind(null, this.props.url)} >{this.props.bio}</p>
                 </div>
             </div>
