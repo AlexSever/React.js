@@ -2,6 +2,9 @@ import React from 'react';
 
 import TwitchAPI from '../api/Twitch.jsx';
 
+import SearchChannel from './SearchChannel.jsx';
+import AddChannel from './AddChannel.jsx';
+
 // import AddStream from './AddStream.jsx';
 
 export default class Streams extends React.Component {
@@ -11,10 +14,16 @@ export default class Streams extends React.Component {
         this.state = {
             twitchChannelsDB: ["freecodecamp", "ogamingsc2", "trumpsc", "esl_sc2", "cretetion", "storbeck", "robotcaleb", "habathcx", "noobs2ninjas", "streamerhouse", "stonedyooda", "reynad27", "desertodtv", "plusan", "a_seagull"],
             permanentData: [],
+            onlineData: [],
+            offlineData: [],
             renderingData: [],
+            
             all: "active",
             online: "",
             offline: "",
+            
+            searchChannel: "",
+            
             opacity: {opacity: "1"},
             popup: {
                 visibility: "hidden",
@@ -32,6 +41,8 @@ export default class Streams extends React.Component {
         this.handleKeyDown = this.handleKeyDown.bind(this);
         this.addChannel = this.addChannel.bind(this);
         this.removeChannel = this.removeChannel.bind(this);
+
+        this.filterChannels = this.filterChannels.bind(this);
     }
     componentDidMount() {
         this.loadChannelsFromDB();
@@ -66,6 +77,7 @@ export default class Streams extends React.Component {
             return channel.streamData.stream !== null;
         });
         this.setState({
+            onlineData: online,
             renderingData: online,
             all: "",
             online: "active",
@@ -78,6 +90,7 @@ export default class Streams extends React.Component {
             return channel.streamData.stream === null;
         });
         this.setState({
+            offlineData: offline,
             renderingData: offline,
             all: "",
             online: "",
@@ -93,16 +106,29 @@ export default class Streams extends React.Component {
             offline: ""
         }, function() {console.log(this.state.renderingData);});
     }
+    filterChannels(searchText) {
+        let currentData = this.state.permanentData.slice();
+
+        if (this.state.online === "active") {
+            currentData = this.state.onlineData.slice();
+        } else if (this.state.offline === "active") {
+            currentData = this.state.offlineData.slice();
+        }
+            let filteredData = currentData.filter(channel => {
+                return searchText.length === 0 || channel.channelData.display_name.toLowerCase().indexOf(searchText) > -1;
+            });
+            this.setState({
+                renderingData: filteredData
+            }, function() {console.log(this.state.renderingData);});
+    }
     popupOpen() {
-        //this.refs.userInput.focus();
         this.setState({
             opacity: {opacity: "0.3"},
             popup: {
                 visibility: "visible",
                 opacity: "1"
             }
-        });
-
+        }, () => this.refs.userInput.focus());
     }
     popupClose() {
         this.setState({
@@ -125,6 +151,7 @@ export default class Streams extends React.Component {
         }
     }
     addChannel() {
+        // e.preventDefault();
         let userInput = this.refs.userInput.value.toLowerCase();
         //console.log(this.state.input);
         if (userInput.length > 0) {
@@ -168,6 +195,8 @@ export default class Streams extends React.Component {
                     });
 
             }
+        } else {
+            this.refs.userInput.focus();
         }
     }
     removeChannel(name, id) {
@@ -190,7 +219,7 @@ export default class Streams extends React.Component {
             twitchChannelsDB: channels,
             permanentData: permanentDataLeft,
             renderingData: currentDataLeft
-        }/*, function() {this.loadChannelsFromDB();}*/);
+        }/*, () => this.loadChannelsFromDB();*/);
     }
     render() {
         //console.log(JSON.stringify(this.state, null, 2));
@@ -218,26 +247,36 @@ export default class Streams extends React.Component {
                     <button className={allBtn} onClick={this.showAll}>All</button>
                     <button style={styleOnlineBtn} className={onlineBtn} onClick={this.findOnline}>Online</button>
                     <button style={styleOfflineBtn} className={offlineBtn} onClick={this.findOffline}>Offline</button>
+                    <SearchChannel onSearch={this.filterChannels} />
                     <button className="addChannelBtn" onClick={this.popupOpen}>Add Channel</button>
                     <a href='http://www.twitch.tv' target='_blank'><i className='fa fa-twitch'/></a>
                 </div>
                 <div style={this.state.opacity} className="right-field">
                     <HandleStreams data={this.state.renderingData} removeChannel={this.removeChannel}/>
                 </div>
+                <div>
+                    <AddChannel
+                        style={this.state.popup}
+                        onInput={this.addChannel}
+                        onEnter={this.handleKeyDown}
+                        inputStatus={this.state.inputStatus}
+                        onClose={this.popupClose}
+                    />
+                </div>
+                /*
                 <div style={this.state.popup} className='submit-popup'>
                     <input
                         type='text'
                         placeholder='Channel Name'
                         className="add-channel-input"
                         ref="userInput"
-                        /*value={this.state.input}*/
-                        /*onChange={this.handleInputChange}*/
                         onKeyDown={this.handleKeyDown}
                     />
                     <i className='fa fa-close' onClick={this.popupClose}/>
                     <button className="add-channel-button" onClick={this.addChannel}>Add Channel</button>
                     <p className='add-status'>{this.state.inputStatus}</p>
                 </div>
+                */
             </div>
         );
     }
@@ -320,7 +359,7 @@ class RenderStream extends React.Component {
                 </div>
                 <div className="overlay">
                     <i className='fa fa-close' onClick={this.props.removeChannel.bind(null, this.props.name, this.props.id)}/>
-                    <p className="bio" onClick={this.handleClick.bind(null, this.props.url)} >{this.props.bio}</p>
+                    <p className="bio" onClick={this.handleClick.bind(this, this.props.url)} >{this.props.bio}</p>
                 </div>
             </div>
         );

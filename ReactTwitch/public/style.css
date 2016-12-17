@@ -2,6 +2,7 @@ body {
     background: #6441A5;
 }
 button:focus {outline:0;}
+input:focus {outline:0;}
 
 /*** Main ***/
 
@@ -39,7 +40,7 @@ button:focus {outline:0;}
     height: 50px;
     line-height: 50px;
     text-align: center;
-    transition: background 0.5s;
+    transition: background 0.3s;
     width: 200px;
     font-family: "Cabin Sketch", sans-serif;
     font-size: 2em;
@@ -50,6 +51,16 @@ button:focus {outline:0;}
 }
 .active {
     background: #6441A5;
+}
+.search-channel {
+    margin-top: 20px;
+    cursor: pointer;
+    height: 40px;
+    text-align: center;
+    width: 200px;
+    font-size: 1.4em;
+    border-radius: 15px 0 0 15px;
+    border: none;
 }
 .addChannelBtn {
     display: block;
