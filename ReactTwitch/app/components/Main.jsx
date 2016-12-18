@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Streams from './Streams.jsx';
+import Channels from './Channels.jsx';
 
 export default class Main extends React.Component {
     render() {
@@ -9,7 +9,7 @@ export default class Main extends React.Component {
                 <div className="titleDiv">
                     <h1 className="title">Reactive Twitch</h1>
                 </div>
-                <Streams />
+                <Channels />
             </div>
         );
     }
