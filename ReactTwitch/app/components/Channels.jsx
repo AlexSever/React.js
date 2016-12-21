@@ -2,9 +2,9 @@ import React from 'react';
 
 import TwitchAPI from '../api/Twitch.jsx';
 
-import LoadChannels from './LoadChannels.jsx';
 import SearchChannel from './SearchChannel.jsx';
 import AddChannel from './AddChannel.jsx';
+import RenderChannel from './RenderChannel.jsx';
 
 // import AddStream from './AddStream.jsx';
 
@@ -18,12 +18,12 @@ export default class Channels extends React.Component {
             onlineData: [],
             offlineData: [],
             renderingData: [],
-
-            isLoading: true,
-
+            
             all: "active",
             online: "",
             offline: "",
+
+            isLoading: true,
             
             searchChannel: "",
             
@@ -45,7 +45,7 @@ export default class Channels extends React.Component {
         this.addChannel = this.addChannel.bind(this);
         this.removeChannel = this.removeChannel.bind(this);
 
-        this.filterChannels = this.filterChannels.bind(this);
+        this.searchChannel = this.searchChannel.bind(this);
     }
     componentDidMount() {
         this.loadChannelsFromDB();
@@ -57,7 +57,8 @@ export default class Channels extends React.Component {
                 TwitchAPI.getChannelData(channel)
                     .then(response => {
                         resolve(response);
-                    }, error => {
+                    })
+                    .catch( error => {
                         reject(error);
                     })
             })
@@ -110,7 +111,7 @@ export default class Channels extends React.Component {
             offline: ""
         }, function() {console.log(this.state.renderingData);});
     }
-    filterChannels(searchText) {
+    searchChannel(searchText) {
         let currentData = this.state.permanentData.slice();
 
         if (this.state.online === "active") {
@@ -251,16 +252,15 @@ export default class Channels extends React.Component {
                     <button className={allBtn} onClick={this.showAll}>All</button>
                     <button style={styleOnlineBtn} className={onlineBtn} onClick={this.findOnline}>Online</button>
                     <button style={styleOfflineBtn} className={offlineBtn} onClick={this.findOffline}>Offline</button>
-                    <SearchChannel onSearch={this.filterChannels} />
+                    <SearchChannel onSearch={this.searchChannel} />
                     <button className="addChannelBtn" onClick={this.popupOpen}>Add Channel</button>
                     <a href='http://www.twitch.tv' target='_blank'><i className='fa fa-twitch'/></a>
                 </div>
                 <div style={this.state.opacity} className="right-field">
-                    <LoadChannels
+                    <HandleStreams
                         isLoading={this.state.isLoading}
                         data={this.state.renderingData}
-                        removeChannel={this.removeChannel}
-                    />
+                        removeChannel={this.removeChannel}/>
                 </div>
                 <div>
                     <AddChannel
@@ -271,10 +271,86 @@ export default class Channels extends React.Component {
                         onClose={this.popupClose}
                     />
                 </div>
+                /*
+                <div style={this.state.popup} className='submit-popup'>
+                    <input
+                        type='text'
+                        placeholder='Channel Name'
+                        className="add-channel-input"
+                        ref="userInput"
+                        onKeyDown={this.handleKeyDown}
+                    />
+                    <i className='fa fa-close' onClick={this.popupClose}/>
+                    <button className="add-channel-button" onClick={this.addChannel}>Add Channel</button>
+                    <p className='add-status'>{this.state.inputStatus}</p>
+                </div>
+                */
             </div>
         );
     }
 }
+class HandleStreams extends React.Component {
+    render() {
+        let channels = this.props.data;
+        let renderChannels = "";
 
+        if (this.props.isLoading) {
+            // return(<div className="spinner-loader">Loading…</div>);
+            return (<img className="spinner-loader" src="spin.svg" alt="spinner-loader"/>);
+        } else {
+            renderChannels = channels.map(item => {
+
+                let url = item.channelData.url,
+                    id = item.channelData._id,
+                    name = item.channelData.display_name,
+                    logo = item.channelData.logo,
+                    streaming = item.streamData.stream,
+                    streamingMessage = "",
+                    bio = item.userData.bio,
+                    closed = "",
+                    style = {background: "#FF1744"};
+
+                if ( (streaming === null) || (streaming === undefined) ) {
+                    streamingMessage = "User is not currently streaming";
+                } else {
+                    streamingMessage = `User is currently streaming ${streaming.game} with ${streaming.viewers} viewers.`;
+                    style = {background: "#00E676"}
+                }
+
+                if (item.channelData.status === 422) {
+                    closed = "This account is closed or does not exist";
+                    streamingMessage = "";
+                    style = {background: "#000000"}
+                }
+
+                if (logo === null) {
+                    logo = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/231853/TwitchHolder.png';
+                }
+
+                return (
+                    <RenderChannel
+                        removeChannel = {this.props.removeChannel}
+                        id = {id}
+                        key = {id}
+                        url = {url}
+                        logo = {logo}
+                        name = {name}
+                        streaming = {streaming}
+                        streamingMessage = {streamingMessage}
+                        bio = {bio}
+                        closed = {closed}
+                        style = {style}
+                    />
+                );
+            });
+        }
+
+        return (
+            <div>
+                {renderChannels}
+            </div>
+        );
+    }
+}
 // <p>{this.props.closed}</p>
 // <p className="streaming">{this.props.streamingMessage}</p>
