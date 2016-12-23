@@ -1,3 +1,4 @@
+// REDUCER
 const counter = (state = 0, action) => {
     switch (action.type) {
         case 'INCREMENT':
@@ -11,6 +12,9 @@ const counter = (state = 0, action) => {
 
 const { createStore } = Redux;
 const store = createStore(counter);
+
+// store.dispatch({type: 'INCREMENT'});
+// console.log(store.getState());
 
 const render = () => {
     document.body.innerText = store.getState();
